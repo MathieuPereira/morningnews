@@ -48,7 +48,7 @@ function ScreenArticlesBySource(props) {
   var saveArticle = async article => {
     props.addToWishList(article)
 
-    const rawRespons = await fetch('/wishlist', {
+    const rawRespons = await fetch('/save-article', {
       method: 'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: `title=${article.title}&description=${article.description}&content=${article.description}&image=${article.toUrlImage}&token=${props.token}`

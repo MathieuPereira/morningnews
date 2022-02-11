@@ -11,9 +11,7 @@ function ScreenMyArticles(props) {
   const [visible, setVisible] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-
-
-
+  
   var showModal = (title, content) => {
     setVisible(true)
     setTitle(title)
@@ -30,6 +28,16 @@ function ScreenMyArticles(props) {
     console.log(e)
     setVisible(false)
   }
+
+  var deleteArticle = async title => {
+    props.deleteToWishList(title)
+
+    const rawRespons = await fetch('/delete-article', {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `title=${title}&token=${props.token}`
+   });
+  };
 
   var noArticles
   if(props.myArticles == 0){
@@ -67,7 +75,7 @@ function ScreenMyArticles(props) {
                     }
                     actions={[
                         <Icon type="read" key="ellipsis2" onClick={() => showModal(article.title,article.content)} />,
-                        <Icon type="delete" key="ellipsis" onClick={() => props.deleteToWishList(article.title)} />
+                        <Icon type="delete" key="ellipsis" onClick={() => deleteArticle(article.title)} />
                     ]}
                     >
 
@@ -90,22 +98,14 @@ function ScreenMyArticles(props) {
 
               ))}
 
-
-
-       
-
-                
-
              </div>
-      
- 
 
       </div>
   );
 }
 
 function mapStateToProps(state){
-  return {myArticles: state.wishList}
+  return {myArticles: state.wishList, token : state.token}
 }
 
 function mapDispatchToProps(dispatch){
@@ -117,8 +117,6 @@ function mapDispatchToProps(dispatch){
     }
   }
 }
-
-
 
 export default connect(
   mapStateToProps,
