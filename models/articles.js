@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 
 const articleSchema = mongoose.Schema({
-    username: String,
-    email: String,
-    password: String,
-    token: String,
+    title: String,
+    description: String,
+    content: String,
+    image: String
 })
 
 const articleModel = mongoose.model('articles', articleSchema)
 
-module.exports = articleModel
+module.exports = articleModel;
