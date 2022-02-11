@@ -5,7 +5,7 @@ var uid2 = require('uid2')
 var bcrypt = require('bcrypt');
 
 var userModel = require('../models/users')
-
+var articleModel = require('../models/articles')
 
 router.post('/sign-up', async function(req,res,next){
 
@@ -67,7 +67,9 @@ router.post('/sign-in', async function(req,res,next){
   }
 
   if(error.length == 0){
-
+    user = await userModel.findOne({
+      email: req.body.emailFromFront,
+    })
   
     
     if(user){
@@ -87,8 +89,81 @@ router.post('/sign-in', async function(req,res,next){
 
   res.json({result, user, error, token})
 
+})
+
+router.post('/save-article', async function(req,res,next){
+
+var user = await userModel.findOne({token : req.body.token})
+console.log(user)
+
+let articleId;
+var articleExists = await articleModel.findOne({title : req.body.title});
+
+if(articleExists == null){
+
+  var saveArticle = new articleModel ({
+    title: req.body.title,
+    description: req.body.description,
+    content: req.body.content,
+    image: req.body.image
+    });
+
+  var articleSaved = await saveArticle.save();
+  articleId = articleSaved._id;
+
+} else {
+  articleId = articleExists._id;
+  }
+
+  if (!user.userArticles.includes(articleId)){
+   user.userArticles.push(articleId);
+
+  var userSaved = await user.save();
+
+  res.json({articleSaved, userSaved})
+  } else {
+    res.json({error : 'Article déjà enregistré'})
+  }
 
 })
+
+router.delete('/delete-article', async function(req,res,next){
+
+  var user = await userModel.findOne({token : req.body.token})
+
+  var myarticle = user.userArticles;
+
+  var articleToDelete = await articleModel.findOne({ title: req.body.title});
+
+  var articleId = articleToDelete._id;
+
+  if(articleToDelete !== null){
+
+    var index = (myarticle.indexOf("articleId"));
+    user.userArticles.splice(index, 1);
+
+    var userSaved = await user.save();
+
+    var deleteArticle = await articleModel.deleteOne({ title: req.body.title});
+
+    res.json({delete : true, userSaved, myarticle, deleteArticle})
+  } else {
+    res.json({delete : false})
+  }
+
+  })
+
+  router.get('/whislist', async function(req,res,next){
+
+    var articlesWishList = [];
+    var user = await userModel.findOne({token : req.query.token})
+    console.log(user)
+
+    if(user !== null){
+      articlesWishList = await userModel.findOne({token : req.query.token}).populate('userArticles');
+    }
+    res.json({articlesWishList})
+  })
 
 // * LANGUAGE ROUTES
 // PUT Language

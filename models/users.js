@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
     password: String,
     token: String,
     lastLanguage : {type: String, default: 'fr'},
-    userArticles : { type: mongoose.Schema.Types.ObjectId, ref: 'articles' }
+    userArticles : [{ type: mongoose.Schema.Types.ObjectId, ref: 'articles' }]
 })
 
 const userModel = mongoose.model('users', userSchema)
