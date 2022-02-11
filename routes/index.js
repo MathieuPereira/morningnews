@@ -153,7 +153,7 @@ router.delete('/delete-article', async function(req,res,next){
 
   })
 
-  router.get('/whislist', async function(req,res,next){
+  router.get('/wishlist', async function(req,res,next){
 
     var articlesWishList = [];
     var user = await userModel.findOne({token : req.query.token})

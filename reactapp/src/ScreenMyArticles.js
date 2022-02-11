@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import { Card, Icon, Modal} from 'antd';
 import Nav from './Nav'
@@ -11,6 +11,19 @@ function ScreenMyArticles(props) {
   const [visible, setVisible] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+
+  useEffect(() => {
+    const wishList = async() => {
+      const data = await fetch('/wishlist')
+      const body = await data.json()
+      console.log(body)
+
+      props.toWishlist(body.userArticles)
+    }
+
+    wishList()  
+
+  },[])
   
   var showModal = (title, content) => {
     setVisible(true)
@@ -114,7 +127,13 @@ function mapDispatchToProps(dispatch){
       dispatch({type: 'deleteArticle',
         title: articleTitle
       })
-    }
+    },
+    toWishlist: function(articles){
+      dispatch({type: 'toWishlist',
+        articles : articles
+      })
+    },
+
   }
 }
 
