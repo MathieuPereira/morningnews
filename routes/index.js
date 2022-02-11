@@ -67,9 +67,7 @@ router.post('/sign-in', async function(req,res,next){
   }
 
   if(error.length == 0){
-    user = await userModel.findOne({
-      email: req.body.emailFromFront,
-    })
+
   
     
     if(user){
@@ -91,5 +89,29 @@ router.post('/sign-in', async function(req,res,next){
 
 
 })
+
+// * LANGUAGE ROUTES
+// PUT Language
+router.put('/last-lang', async function(req,res,next){
+  let token = req.body.token
+  let lang = req.body.lang
+  let updateUser = await userModel.updateOne(
+     { token: token},
+     { lastLanguage: lang }
+  );
+
+  res.json({user: updateUser})
+})
+
+// GET Language
+router.get('/last-lang', async function(req,res,next) {
+  let user = await userModel.findOne({token: req.query.token,})
+
+    if (user.lastLanguage !== null) {
+      res.json({result: true, language: user.lastLanguage })
+    } else {
+      res.json({result: false})
+    }
+});
 
 module.exports = router;
